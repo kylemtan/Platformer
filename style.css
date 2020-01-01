@@ -1,0 +1,140 @@
+body {
+    font-family: Helvetica;
+    text-align: center;
+    background-color: rgb(153, 255, 51);
+    
+    }
+  
+  .mission {
+    max-width: 1000px;
+    text-align: center;
+    margin: auto;
+  }
+  
+  h1 {
+    font-family: 'Lora', serif;
+    }
+  
+  #topBtn {
+    border: none; 
+    outline: none; 
+    background-color: none; 
+    color: black; 
+    cursor: pointer; 
+    border-radius: 10px;
+    font-size: 18px; 
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+  }
+  
+  #topBtn:hover {
+    background-color: red;
+    
+  }
+  
+  #navbar-outside {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+  
+  .navbar-item {
+    float: left;
+    border-right:1px solid #bbb;
+    transition: width 2s, height 2s;
+  }
+  
+  .navbar-item:hover {
+    font-size: 20px;
+  }
+  
+  .navbar-item a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  form {
+    border:1px solid #ccc;
+    width: 500px;
+    display: inline-block
+  }
+  
+  input[type=text] {
+    width: 400px;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: lightgray;
+  }
+  
+  input[type=text]:focus {
+    background-color: lightgray;
+    outline: none;
+  }
+  
+  hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+  }
+  
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+  }
+  
+  button:hover {
+    opacity:1;
+  }
+  
+  .signupbtn {
+    float: left;
+    width: 200px;
+  }
+  
+  .container {
+    padding: 16px;
+  }
+  
+  .clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  
+  .container {
+    background-color: white;
+  }
+  
+  #rect-animation {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    position: sticky;
+    right: 0;
+    animation-name: animation;
+    animation-duration: 4s;
+    animation-iteration-count: infinite;
+    float: right;
+  }
+  
+  @keyframes animation {
+    0%   {background-color:red; right:0px; top:0px;}
+    25%  {background-color:yellow; right:20px; top:0px;}
+    50%  {background-color:blue; right:20px; top:20px;}
+    75%  {background-color:green; right:0px; top:20px;}
+    100% {background-color:red; right:0px; top:0px;}
+  }
