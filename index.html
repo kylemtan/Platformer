@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      canvas {
+        background-color: #f1f1f1;
+        padding: 0;
+        margin: auto;
+        display: block;
+        width: 1200px;
+        height: 500px;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        cursor: crosshair;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        border: 0;
+        overflow: hidden;
+        display: block;
+      }
+    </style>
+  </head>
+  <body onload="startGame()">
+    <script>
+      var player;
+      var scope;
+      var bullets = [];
+      var enemy = [];
+      var mapArray = [];
+      var shoot = false;
+      var fuelColor = "green";
+      var grounded = false;
+      var gravityIncrement = 0.2;
+      var deathScreen;
+      var deathText1;
+      var deathText2;
+      var deathText3;
+      var deathTimer = 0;
+      var typeDeath = "you lived";
+      var verticalPower = 0;
+      var sideMovement = 3;
+      var backgroundSound;
+      var portalSound;
+      var vaporize;
+      var l = "lock";
+      var k = "key";
+      var timer = 0;
+      var scene = "survival";
+
+
+
+
+      /*
+      0 = sky/nothing
+      1 = ground
+      2 = water
+      3 = lava 
+      4 = fuelpad
+      */
+
+      var map = [
+        3,k,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,2,2,1,1,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,l,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,0,4,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        3,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+    ];
+      var constantMap = [
+      3,k,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,2,2,1,1,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,l,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        3,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        3,0,4,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        3,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
+        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
+        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+      ];
+
+
+
+
+
+
+      function startGame() {
+        player = new component(10, 10, "black", 0, 475, "normal");
+        scope = new component(10,10,"red",10,10, "scope");
+        backgroundSound = new sound("backgroundsound.wav");
+        portalSound = new sound("portalSound.wav");
+        vaporize = new sound("vaporize.mp3");
+        deathScreen = new component(0,0,"red",0,0);
+        deathText1 = new component("50px",  "Consolas", "black",  600,  150,  "text");
+        deathText2 = new component("50px",  "Consolas", "black",  600,  250,  "text");
+        deathText3 = new component("50px",  "Consolas", "black",  600,  350,  "text");
+        Game.keys = [];
+        Game.start();
+      }
+
+      var Game = {
+        canvas: document.createElement("canvas"),
+        start: function() {
+          this.canvas.width = 1200;
+          this.canvas.height = 500;
+
+          this.context = this.canvas.getContext("2d");
+          document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+          this.frameNo = 0;
+          this.interval = setInterval(updateGame, 20);
+          window.addEventListener("mousemove", function(e) {
+            Game.x = e.pageX;
+            Game.y = e.pageY;
+          });
+          window.addEventListener("keydown", function(e) {
+            Game.keys = Game.keys || [];
+            Game.keys[e.keyCode] = true;
+          });
+          window.addEventListener("keyup", function(e) {
+            Game.keys[e.keyCode] = false;
+          });
+          window.addEventListener("mousedown", function(e) {
+            shoot = true;
+          });
+          window.addEventListener("mouseup", function(e) {
+            shoot = false;
+          });
+        },
+        clear: function() {
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        },
+        stop: function() {
+          clearInterval(this.interval);
+        }
+      };
+
+      function everyinterval(n) {
+        if ((myGameArea.frameNo / n) % 1 == 0) {
+          return true;
+        }
+        return false;
+      }
+
+      function component(width, height, color, x, y, type, xSpeed, ySpeed) {
+        this.type = type;
+        if (type == "image") {
+          this.image = new Image();
+          this.image.src = color;
+        }
+        this.width = width;
+        this.height = height;
+        this.x = x;
+        this.y = y;
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
+        this.color = color;
+        this.text = "";
+        this.update = function() {
+          ctx = Game.context;
+          if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+          } else if (type == "image") {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+          } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+          }
+        };
+      }
+
+      function sound(src) {
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.play = function() {
+          this.sound.play();
+        };
+        this.stop = function() {
+          this.sound.pause();
+        };
+      }
+
+
+
+
+
+      
+      function updateBullets(b) {
+        for (var i = 0; i < b.length; i += 1) {
+            if (
+            player.x < b[i].x + b[i].width &&
+            player.x + player.width > b[i].x &&
+            player.y < b[i].y + b[i].height &&
+            player.y + player.height > b[i].y
+          ) {
+            if(Game.keys[87] && timer > 10){
+                verticalPower = 5;
+                b.splice(i,1);
+                gravity = 0;
+                
+
+            }
+          }
+
+          for(e = 0; e < enemy.length; e += 1){
+            if(
+            enemy[e].x < b[i].x + b[i].width &&
+            enemy[e].x + enemy[e].width > b[i].x &&
+            enemy[e].y < b[i].y + b[i].height &&
+            enemy[e].y + enemy[e].height > b[i].y
+            ){
+                enemy.splice(e,1);
+                bullets.splice(b,1);
+            }
+          }
+
+
+
+          if (b[i].x > 980 || b[i].x < 0 || b[i].y > 490 || b[i].y < 0) {
+            b.splice(i, 1);
+          } else {
+            b[i].x = b[i].x + b[i].xSpeed;
+            b[i].y = b[i].y + b[i].ySpeed;
+          }
+          for (m = 0; m < mapArray.length; m += 1) {  
+          if (
+            mapArray[m].x < b[i].x + b[i].width &&
+            mapArray[m].x + mapArray[m].width > b[i].x &&
+            mapArray[m].y < b[i].y + b[i].height &&
+            mapArray[m].y + mapArray[m].height > b[i].y
+          ) {
+                if(mapArray[m].type =="key"){
+                    for (a = 0; a < mapArray.length; a += 1) {
+                        if(mapArray[a].type == "lock"){
+                            map.splice(a, 1, 0);
+                            b.splice(i,1);
+                        }
+                    }
+                } else if(mapArray[m].type !="sky" && mapArray[m].type != "water" && mapArray[m].type !="exit"){
+                b.splice(i, 1);
+              }
+          } 
+        }
+      }
+    }
+
+      function fireBullets() {
+        var verticalBulletPower =
+          (Game.y - (window.innerHeight - 500) / 2 - player.y - 5) / 50;
+        var sideBulletPower =
+          (Game.x - (window.innerWidth - 1200) / 2 - player.x - 5) / 50;
+        timer += 1;
+        if (shoot==true && timer > 20 && bullets.length <= 0    ) {
+          bullets.push(
+            new component(
+              10,
+              10,
+              "gray",
+              player.x,
+              player.y,
+              "multiarray",
+              sideBulletPower,
+              verticalBulletPower
+            )
+          );
+          timer = 0;
+        }
+      }
+
+      function mapCollision(object) {
+        
+        for (i = 0; i < mapArray.length; i += 1) {  
+          var horizontal =
+                mapArray[i].x +
+                (mapArray[i].width / 2) -
+                (object.x + object.width / 2);
+        var vertical =
+                mapArray[i].y +
+                (mapArray[i].height / 2) -
+                (object.y + object.height / 2);
+          if (
+            mapArray[i].x < object.x + object.width &&
+            mapArray[i].x + mapArray[i].width > object.x &&
+            mapArray[i].y < object.y + object.height &&
+            mapArray[i].y + mapArray[i].height > object.y
+          ) {
+            if (mapArray[i].type == "lava") { 
+                typeDeath = "you been scorched by da-lava";
+                  death();
+
+            } else if (mapArray[i].type == "ground" || mapArray[i].type == "lock") {
+                if(Math.abs(horizontal)>Math.abs(vertical)){  
+                if (horizontal > 0) {
+                    object.x-=3.1;
+                }
+                  else if (horizontal < 0 ){
+                    object.x+=3.1;
+                  } 
+                } else {
+                  if (vertical < 0 && verticalPower > 0) {
+                    object.y = mapArray[i].y + mapArray[i].height;
+                    verticalPower=0;
+                  }
+                  else if(vertical > 0) {
+                    grounded=true;
+                    object.y = mapArray[i].y - player.height;
+                    verticalPower = 0.1;
+                }
+            }
+            } else if (mapArray[i].type == "water") {
+            verticalPower = verticalPower/2;
+            if(Game.keys[87]){
+                verticalPower = 0.5;
+            }
+            if(Game.keys[83]){
+                verticalPower = -0.5;
+            }
+            sideMovement = 0.5;
+        } else {
+                sideMovement = 3;
+            } 
+        if (mapArray[i].type == "jumppad" && object == player) {
+              verticalPower = 7.5;
+              grounded = false;
+            } else if (mapArray[i].type == "exit" && object == player) {
+              portalSound.play();
+              reset();
+            }
+            }
+        }
+      }
+
+      var spawn = 0;
+
+      function spawnEnemy() {
+        spawn+=1;
+        var speed = 3;
+        var amount = Math.random();
+        if (amount < 0.5){
+            speed = -1;
+        } else {
+            speed = 1;
+        }
+        if (spawn>10) {
+          enemy.push(
+            new component(
+              20,
+              20,
+              "brown",
+              (Math.random())*990,
+              10,
+              "multiarray",
+              speed, 
+              3       
+            )
+          );
+          spawn = 0;
+        }
+      }
+
+      function enemyCollision() {
+    
+    for(e = 0; e < enemy.length ; e+=1) {
+
+      if (
+            enemy[e].x < player.x + player.width &&
+            enemy[e].x + enemy[e].width > player.x &&
+            enemy[e].y < player.y + player.height &&
+            enemy[e].y + enemy[e].height > player.y
+          ) {
+            typeDeath = "you been mowed by da enemy"
+            death();
+          }
+
+
+        for (i = 0; i < mapArray.length; i += 1) {  
+          var horizontal =
+                mapArray[i].x +
+                (mapArray[i].width / 2) -
+                (enemy[e].x + enemy[e].width / 2);
+        var vertical =
+                mapArray[i].y +
+                (mapArray[i].height / 2) -
+                (enemy[e].y + enemy[e].height / 2);
+          if (
+            mapArray[i].x < enemy[e].x + enemy[e].width &&
+            mapArray[i].x + mapArray[i].width > enemy[e].x &&
+            mapArray[i].y < enemy[e].y + enemy[e].height &&
+            mapArray[i].y + mapArray[i].height > enemy[e].y
+          ) {
+            if (mapArray[i].type == "lava") { 
+                  enemy.splice(e, 1);
+            }
+            if (mapArray[i].type == "ground" || mapArray[i].type == "lock") {
+                if(Math.abs(horizontal)>Math.abs(vertical)){  
+                    enemy[e].xSpeed*=-1;
+                    if (horizontal > 0) {
+                    enemy[e].x-=3.1;
+                }
+                  else if (horizontal < 0 ){
+                    enemy[e].x+=3.1;
+                  } 
+                } else {
+                  if (vertical < 0) {
+                    enemy[e].y = mapArray[i].y + mapArray[i].height;
+                    enemy[e].ySpeed = 0;
+                  }
+                  else if(vertical > 0) {
+                    enemy[e].y = mapArray[i].y - enemy[e].height;
+                    enemy[e].ySpeed = 0;
+                }
+            } 
+        } else {
+            enemy[e].ySpeed = 3;
+            }
+
+            if(Game.keys[87]){
+                verticalEnemyPower = 0.5;
+            }
+            if(Game.keys[83]){
+                verticalEnemyPower = -0.5;
+            }
+            sideEnemyMovement = 0.5;
+        } else {
+                sideEnemyMovement = 3;
+            } 
+        if (mapArray[i].type == "jumppad") {
+              verticalEnemyPower = 7.5;
+            }
+            }
+        }
+        }
+
+      function enemyMovement(){
+        for(e = 0; e < enemy.length; e += 1){
+            enemy[e].x -=enemy[e].xSpeed;
+            enemy[e].y+=3;
+        }
+      };
+      
+      function drawBackground() {
+        mapArray = [];
+        var mapIndex = 0;
+        for (y = 0; y < 20; y++) {
+          for (x = 0; x < 40; x++, mapIndex++) {
+            var tile_x = x * 25;
+            var tile_y = y * 25;
+
+            var tileType = map[mapIndex];
+
+            if (tileType == 1) {
+              mapArray.push(
+                new component(25, 25, "green", tile_x, tile_y, "ground")
+              );
+            } else if (tileType == 2) {
+              mapArray.push(
+                new component(25, 25, "blue", tile_x, tile_y, "water")
+              );
+            } else if (tileType == 3) {
+              mapArray.push(
+                new component(25, 25, "red", tile_x, tile_y, "lava")
+              );
+            } else if (tileType == 4) {
+              mapArray.push(
+                new component(25, 25, "purple", tile_x, tile_y, "jumppad")
+              );
+            } else if (tileType == 9) {
+              mapArray.push(
+                new component(25, 25, "white", tile_x, tile_y, "exit")
+              );
+            } else if (tileType == l) {
+              mapArray.push(
+                new component(25, 25, "gray", tile_x, tile_y, "lock")
+              );
+            } else if (tileType == k) {
+              mapArray.push(
+                new component(25, 25, "yellow", tile_x, tile_y, "key")
+              );
+            } else {
+              mapArray.push(
+                new component(25, 25, "lightblue", tile_x, tile_y, "sky")
+              );
+            }
+          }
+        }
+      }
+
+
+
+
+
+      function reset(){
+        scene = "survival";
+
+        deathTimer = 0; 
+        player.x = 0;
+        player.y = 465;
+        verticalPower = 0;
+        map = constantMap;
+        enemy = [];
+        bullets = [];
+        deathScreen.width = 0;
+        deathScreen.height = 0;
+    }
+
+      function death(){
+        scene = "death";
+
+        if(deathTimer < 1){
+        vaporize.play();
+        }
+        backgroundSound.stop();
+        backgroundSound.currentTime = 0;
+        deathTimer +=1;
+
+        Game.context.textAlign = "center";
+        deathText1.text = "YOU DIED!"
+        deathText2.text = typeDeath;
+        deathText3.text = "Hit R to Restart";
+        deathScreen.width = 1200;
+        deathScreen.height = 500;
+        deathScreen.x = 0;
+        deathScreen.y = 0;
+        deathScreen.update();
+        deathText1.update();
+        deathText2.update();
+        deathText3.update();
+    }
+
+    function death(){
+        scene = "death";
+
+        if(deathTimer < 1){
+        vaporize.play();
+        }
+        backgroundSound.stop();
+        backgroundSound.currentTime = 0;
+        deathTimer +=1;
+
+        Game.context.textAlign = "center";
+        deathText1.text = "YOU DIED!"
+        deathText2.text = typeDeath;
+        deathText3.text = "Hit R to Restart";
+        deathScreen.width = 1200;
+        deathScreen.height = 500;
+        deathScreen.x = 0;
+        deathScreen.y = 0;
+        deathScreen.update();
+        deathText1.update();
+        deathText2.update();
+        deathText3.update();
+    }
+
+    function survival(){
+    scene = "survival"; 
+
+    drawBackground();
+        for (i = 0; i < mapArray.length; i++) {
+          mapArray[i].update();
+        }
+        enemyMovement();
+        player.update();
+        enemyCollision();
+        fireBullets();
+        spawnEnemy();
+        for (e = 0; e < enemy.length; e++){
+            enemy[e].update();
+        }
+        updateBullets(bullets);
+        for (i = 0; i < bullets.length; i++) {
+          bullets[i].update();
+        }
+        mapCollision(player);
+      }
+
+      function updateGame() {
+        Game.clear(); 
+        Game.frameNo += 1;
+          if(scene == "survival"){backgroundSound.play();
+          }
+
+
+        if(Game.keys[87]  && grounded == true){
+            verticalPower = 5;
+            grounded=false;
+        }
+        player.y-=verticalPower;
+        verticalPower -= gravityIncrement;
+        if(Game.keys[65]){
+            player.x-=sideMovement;
+        }
+        if(Game.keys[68]){
+            player.x+=sideMovement;
+        }
+
+
+
+        if (player.y < 0) {
+          player.y = 0;
+        
+        }
+        if (player.x > 990) {
+          player.x = 990;
+          
+        }
+        if (player.x < 0) {
+          player.x = 0;
+          
+        }
+
+        if(Game.keys[82]){
+            reset();
+        }
+
+        if(scene == "survival"){
+          survival();
+        }
+        if(scene == "death"){
+        death();
+        }
+        
+
+      }
+    </script>
+  </body>
+</html>
