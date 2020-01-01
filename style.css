@@ -48,10 +48,6 @@ body {
     transition: width 2s, height 2s;
   }
   
-  .navbar-item:hover {
-    font-size: 20px;
-  }
-  
   .navbar-item a {
     display: block;
     color: white;
