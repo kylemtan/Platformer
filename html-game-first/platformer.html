@@ -564,6 +564,30 @@
         deathText3.update();
     }
 
+    function death(){
+        scene = "death";
+
+        if(deathTimer < 1){
+        vaporize.play();
+        }
+        backgroundSound.stop();
+        backgroundSound.currentTime = 0;
+        deathTimer +=1;
+
+        Game.context.textAlign = "center";
+        deathText1.text = "YOU DIED!"
+        deathText2.text = typeDeath;
+        deathText3.text = "Hit R to Restart";
+        deathScreen.width = 1200;
+        deathScreen.height = 500;
+        deathScreen.x = 0;
+        deathScreen.y = 0;
+        deathScreen.update();
+        deathText1.update();
+        deathText2.update();
+        deathText3.update();
+    }
+
     function survival(){
     scene = "survival"; 
 
