@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="logo.png">
-    <title>Platformer</title>
+    <title>What Strikes at Night</title>
     <style>
       body{
         background-color: #f1f1f1;
@@ -13,7 +13,7 @@
         padding: 0;
         margin: auto;
         display: block;
-        width: 1200px;
+        width: 1000px;
         height: 500px;
         position: absolute;
         top: 0;
@@ -56,7 +56,7 @@
     </style>
   </head>
   <body>
-<div id="title" class="title-style">Platformer<br /><br \>A platformer by Kyle Macasilli-Tan
+<div id="title" class="title-style">What Strikes at Night<br /><br \>A game by Kyle Macasilli-Tan
   <br />
   <button onclick="toggleScreen()">Start</button>
   <br />
@@ -77,14 +77,11 @@ function toggleScreen() {
 }
 
       var player;
-      var scope;
       var bullets = [];
       var enemy = [];
       var mapArray = [];
       var shoot = false;
       var fuelColor = "green";
-      var grounded = false;
-      var gravityIncrement = 0.2;
       var deathScreen;
       var deathText1;
       var deathText2;
@@ -95,72 +92,43 @@ function toggleScreen() {
       var passes = 0;
       var deathTimer = 0;
       var typeDeath = "you lived";
-      var verticalPower = 0;
-      var sideMovement = 3;
+      var movementSpeed = 2;
       var backgroundSound;
       var portalSound;
       var vaporize;
-      var l = "lock";
-      var k = "key";
       var timer = 0;
       var scene = "survival";
-
+      var l = "l";
+      var k = "k";
 
 
 
       /*
-      0 = sky/nothing
-      1 = ground
-      2 = water
-      3 = lava 
-      4 = fuelpad
+      ground
       */
 
       var map = [
-        3,k,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,2,2,1,1,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,l,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,0,4,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        3,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     ];
-      var constantMap = [
-      3,k,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,2,2,1,1,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,l,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        3,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        3,0,4,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        3,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,3,
-        0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,3,
-        1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-      ];
-
 
 
 
@@ -168,9 +136,6 @@ function toggleScreen() {
 
       function startGame() {
         player = new component(10, 10, "black", 0, 475, "normal");
-        scope = new component(10,10,"red",10,10, "scope");
-        backgroundSound = new sound("backgroundsound.wav");
-        portalSound = new sound("portalSound.wav");
         vaporize = new sound("vaporize.mp3");
         deathScreen = new component(0,0,"red",0,0);
         deathText1 = new component("50px",  "Helvetica", "black",  600,  150,  "text");
@@ -185,7 +150,7 @@ function toggleScreen() {
       var Game = {
         canvas: document.createElement("canvas"),
         start: function() {
-          this.canvas.width = 1200;
+          this.canvas.width = 1000;
           this.canvas.height = 500;
 
           this.context = this.canvas.getContext("2d");
@@ -272,7 +237,6 @@ function toggleScreen() {
 
 
 
-
       
       function updateBullets(b) {
         for (var i = 0; i < b.length; i += 1) {
@@ -340,7 +304,7 @@ function toggleScreen() {
         var sideBulletPower =
           (Game.x - (window.innerWidth - 1200) / 2 - player.x - 5) / 50;
         timer += 1;
-        if (shoot==true && timer > 20 && bullets.length <= 0    ) {
+        if (shoot==true && timer > 20) {
           bullets.push(
             new component(
               10,
@@ -377,37 +341,26 @@ function toggleScreen() {
             if (mapArray[i].type == "lava") { 
                 typeDeath = "you been scorched by da-lava";
                   death();
-
-            } else if (mapArray[i].type == "ground" || mapArray[i].type == "lock") {
+            } else if (mapArray[i].type == "wall" || mapArray[i].type == "lock") {
                 if(Math.abs(horizontal)>Math.abs(vertical)){  
                 if (horizontal > 0) {
-                    object.x-=3.1;
+                    object.x-=movementSpeed;
                 }
                   else if (horizontal < 0 ){
-                    object.x+=3.1;
+                    object.x+=movementSpeed;
                   } 
                 } else {
-                  if (vertical < 0 && verticalPower > 0) {
-                    object.y = mapArray[i].y + mapArray[i].height;
-                    verticalPower=0;
+                  if (vertical < 0) {
+                    object.y+=movementSpeed;
                   }
                   else if(vertical > 0) {
-                    grounded=true;
-                    object.y = mapArray[i].y - player.height;
-                    verticalPower = 0.1;
+                    object.y-=movementSpeed;
                 }
             }
             } else if (mapArray[i].type == "water") {
-            verticalPower = verticalPower/2;
-            if(Game.keys[87]){
-                verticalPower = 0.5;
-            }
-            if(Game.keys[83]){
-                verticalPower = -0.5;
-            }
-            sideMovement = 0.5;
+            movementSpeed = 0.5;
         } else {
-                sideMovement = 3;
+                movementSpeed = 3;
             } 
         if (mapArray[i].type == "jumppad" && object == player) {
               verticalPower = 7.5;
@@ -425,14 +378,7 @@ function toggleScreen() {
 
       function spawnEnemy() {
         spawn+=1;
-        var speed = 3;
-        var amount = Math.random();
-        if (amount < 0.5){
-            speed = -1;
-        } else {
-            speed = 1;
-        }
-        if (spawn>10) {
+        if (spawn>10 && enemy.length<20) {
           enemy.push(
             new component(
               20,
@@ -441,8 +387,8 @@ function toggleScreen() {
               (Math.random())*990,
               10,
               "multiarray",
-              speed, 
-              3       
+              1,
+              1 
             )
           );
           spawn = 0;
@@ -486,35 +432,20 @@ function toggleScreen() {
                 if(Math.abs(horizontal)>Math.abs(vertical)){  
                     enemy[e].xSpeed*=-1;
                     if (horizontal > 0) {
-                    enemy[e].x-=3.1;
+                    enemy[e].x-=enemy[e].xSpeed;
                 }
                   else if (horizontal < 0 ){
-                    enemy[e].x+=3.1;
+                    enemy[e].x+=enemy[e].xSpeed;
                   } 
                 } else {
                   if (vertical < 0) {
-                    enemy[e].y = mapArray[i].y + mapArray[i].height;
-                    enemy[e].ySpeed = 0;
+                    enemy[e].y+=enemy[e].ySpeed;
                   }
                   else if(vertical > 0) {
-                    enemy[e].y = mapArray[i].y - enemy[e].height;
-                    enemy[e].ySpeed = 0;
+                    enemy[e].y-=enemy[e].ySpeed;
                 }
             } 
-        } else {
-            enemy[e].ySpeed = 3;
-            }
-
-            if(Game.keys[87]){
-                verticalEnemyPower = 0.5;
-            }
-            if(Game.keys[83]){
-                verticalEnemyPower = -0.5;
-            }
-            sideEnemyMovement = 0.5;
-        } else {
-                sideEnemyMovement = 3;
-            } 
+        }}
         if (mapArray[i].type == "jumppad") {
               verticalEnemyPower = 7.5;
             }
@@ -524,8 +455,16 @@ function toggleScreen() {
 
       function enemyMovement(){
         for(e = 0; e < enemy.length; e += 1){
-            enemy[e].x -=enemy[e].xSpeed;
-            enemy[e].y+=3;
+            if(enemy[e].x<player.x){
+                enemy[e].x +=enemy[e].xSpeed;
+            } else {
+                enemy[e].x -=enemy[e].xSpeed;
+            }
+            if(enemy[e].y<player.y){
+                enemy[e].y +=enemy[e].ySpeed;
+            } else {
+                enemy[e].y -=enemy[e].ySpeed;
+            }
         }
       };
 
@@ -543,7 +482,7 @@ function toggleScreen() {
 
             if (tileType == 1) {
               mapArray.push(
-                new component(25, 25, "green", tile_x, tile_y, "ground")
+                new component(25, 25, "brown", tile_x, tile_y, "wall")
               );
             } else if (tileType == 2) {
               mapArray.push(
@@ -553,14 +492,6 @@ function toggleScreen() {
               mapArray.push(
                 new component(25, 25, "red", tile_x, tile_y, "lava")
               );
-            } else if (tileType == 4) {
-              mapArray.push(
-                new component(25, 25, "purple", tile_x, tile_y, "jumppad")
-              );
-            } else if (tileType == 9) {
-              mapArray.push(
-                new component(25, 25, "white", tile_x, tile_y, "exit")
-              ); 
             } else if (tileType == l) {
               mapArray.push(
                 new component(25, 25, "gray", tile_x, tile_y, "lock")
@@ -571,7 +502,7 @@ function toggleScreen() {
               );
             } else {
               mapArray.push(
-                new component(25, 25, "lightblue", tile_x, tile_y, "sky")
+                new component(25, 25, "lightgreen", tile_x, tile_y, "sky")
               );
             }
           }
@@ -600,7 +531,6 @@ function toggleScreen() {
         player.x = 0;
         player.y = 465;
         verticalPower = 0;
-        map = constantMap;
         enemy = [];
         bullets = [];
         deathScreen.width = 0;
@@ -613,8 +543,7 @@ function toggleScreen() {
         if(deathTimer < 1){
         vaporize.play();
         }
-        backgroundSound.stop();
-        backgroundSound.currentTime = 0;
+        //stop background sound
         deathTimer +=1;
 
         Game.context.textAlign = "center";
@@ -629,30 +558,9 @@ function toggleScreen() {
         deathText1.update();
         deathText2.update();
         deathText3.update();
-    }
-
-    function death(){
-        scene = "death";
-
-        if(deathTimer < 1){
-        vaporize.play();
+        if(Game.keys[82]){
+            reset();
         }
-        backgroundSound.stop();
-        backgroundSound.currentTime = 0;
-        deathTimer +=1;
-
-        Game.context.textAlign = "center";
-        deathText1.text = "YOU DIED!"
-        deathText2.text = typeDeath;
-        deathText3.text = "Hit R to Restart";
-        deathScreen.width = 1200;
-        deathScreen.height = 500;
-        deathScreen.x = 0;
-        deathScreen.y = 0;
-        deathScreen.update();
-        deathText1.update();
-        deathText2.update();
-        deathText3.update();
     }
 
     function survival(){
@@ -661,15 +569,15 @@ function toggleScreen() {
     drawBackground();
         for (i = 0; i < mapArray.length; i++) {
           mapArray[i].update();
-        }
+        }   
         enemyMovement();
-        player.update();
         enemyCollision();
-        fireBullets();
         spawnEnemy();
         for (e = 0; e < enemy.length; e++){
             enemy[e].update();
         }
+        player.update();
+        fireBullets();
         updateBullets(bullets);
         for (i = 0; i < bullets.length; i++) {
           bullets[i].update();
@@ -685,21 +593,21 @@ function toggleScreen() {
       function updateGame() {
         Game.clear(); 
         Game.frameNo += 1;
-          if(scene == "survival"){backgroundSound.play();
+          if(scene == "survival"){//sound plays
           }
 
 
-        if(Game.keys[87]  && grounded == true){
-            verticalPower = 5;
-            grounded=false;
+        if(Game.keys[87]){
+            player.y-=movementSpeed;
         }
-        player.y-=verticalPower;
-        verticalPower -= gravityIncrement;
+        if(Game.keys[83]){
+            player.y+=movementSpeed;
+        }
         if(Game.keys[65]){
-            player.x-=sideMovement;
+            player.x-=movementSpeed;
         }
         if(Game.keys[68]){
-            player.x+=sideMovement;
+            player.x+=movementSpeed;
         }
 
 
@@ -712,13 +620,14 @@ function toggleScreen() {
           player.x = 990;
           
         }
+
+        if (player.y > 490) {
+          player.y = 490;
+          
+        }
         if (player.x < 0) {
           player.x = 0;
           
-        }
-
-        if(Game.keys[82]){
-            reset();
         }
 
         if(scene == "survival"){
