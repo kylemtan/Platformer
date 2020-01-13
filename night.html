@@ -6,7 +6,7 @@
     <title>What Strikes at Night</title>
     <style>
       body{
-        background-color: #f1f1f1;
+        background-color: #000000;
       }
       canvas {
         background-color: #f1f1f1;
@@ -53,6 +53,15 @@
       button:hover {
         background-color: orange;
       }
+      #side {
+        height: 470px;
+        border-width: 1px;
+        border-top:5px solid green;
+        border-bottom:5px solid green;
+        padding: 10px;
+        font-family: Helvetica; 
+        color: white;
+      }
     </style>
   </head>
   <body>
@@ -65,6 +74,8 @@
   <button onclick="">About</button>
 </div>
     
+
+
     <script>
 function toggleScreen() {
   var title = document.getElementById("title");
@@ -77,9 +88,15 @@ function toggleScreen() {
 }
 
       var player;
+      var hp = "3";
+      var money = 0;
       var bullets = [];
       var enemy = [];
       var mapArray = [];
+      var trees = [];
+      var stones = [];
+      var stoneAmount = 0;
+      var woodAmount = 0;
       var shoot = false;
       var fuelColor = "green";
       var deathScreen;
@@ -108,26 +125,26 @@ function toggleScreen() {
       */
 
       var map = [
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        2,2,2,2,2,0,0,0,0,0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,
+        2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0,0,0,0,0,0,
+        2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+        2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,
+        2,0,0,0,2,2,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,4,1,0,0,0,0,0,0,0,
+        0,0,0,0,0,2,4,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,4,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        3,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        3,3,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        3,0,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        3,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,2,2,4,0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,2,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,3,2,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,3,3,3,3,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,3,3,3
     ];
 
 
@@ -138,9 +155,9 @@ function toggleScreen() {
         player = new component(10, 10, "black", 0, 475, "normal");
         vaporize = new sound("vaporize.mp3");
         deathScreen = new component(0,0,"red",0,0);
-        deathText1 = new component("50px",  "Helvetica", "black",  600,  150,  "text");
-        deathText2 = new component("50px",  "Helvetica", "black",  600,  250,  "text");
-        deathText3 = new component("50px",  "Helvetica", "black",  600,  350,  "text");
+        deathText1 = new component("50px",  "Helvetica", "black",  500,  150,  "text");
+        deathText2 = new component("50px",  "Helvetica", "black",  500,  250,  "text");
+        deathText3 = new component("50px",  "Helvetica", "black",  500,  350,  "text");
         enemyCounter = new component("20px",  "Helvetica", "black",  1050,  20,  "text");
         passCounter = new component("20px",  "Helvetica", "black",  1050,  50,  "text");
         Game.keys = [];
@@ -237,7 +254,7 @@ function toggleScreen() {
 
 
 
-      
+
       function updateBullets(b) {
         for (var i = 0; i < b.length; i += 1) {
             if (
@@ -340,7 +357,7 @@ function toggleScreen() {
           ) {
             if (mapArray[i].type == "lava") { 
                 typeDeath = "you been scorched by da-lava";
-                  death();
+                  hp-=0.1;
             } else if (mapArray[i].type == "wall" || mapArray[i].type == "lock") {
                 if(Math.abs(horizontal)>Math.abs(vertical)){  
                 if (horizontal > 0) {
@@ -383,7 +400,7 @@ function toggleScreen() {
             new component(
               20,
               20,
-              "brown",
+              "purple",
               (Math.random())*990,
               10,
               "multiarray",
@@ -406,7 +423,8 @@ function toggleScreen() {
             enemy[e].y + enemy[e].height > player.y
           ) {
             typeDeath = "you been mowed by da enemy"
-            death();
+            hp-=1;
+            enemy.splice(e,1);
           }
 
 
@@ -427,10 +445,11 @@ function toggleScreen() {
           ) {
             if (mapArray[i].type == "lava") { 
                   enemy.splice(e, 1);
+                  kills+=1;
+                  money+=1;
             }
-            if (mapArray[i].type == "ground" || mapArray[i].type == "lock") {
+            if (mapArray[i].type == "wall" || mapArray[i].type == "lock") {
                 if(Math.abs(horizontal)>Math.abs(vertical)){  
-                    enemy[e].xSpeed*=-1;
                     if (horizontal > 0) {
                     enemy[e].x-=enemy[e].xSpeed;
                 }
@@ -445,11 +464,20 @@ function toggleScreen() {
                     enemy[e].y-=enemy[e].ySpeed;
                 }
             } 
-        }}
-        if (mapArray[i].type == "jumppad") {
-              verticalEnemyPower = 7.5;
-            }
-            }
+        }
+        if (mapArray[i].type == "water") {
+            enemy[e].xSpeed = 0.25;
+            enemy[e].ySpeed = 0.25;
+        } else {
+          enemy[e].xSpeed = 1;
+            enemy[e].ySpeed = 1;
+            } 
+        
+        }
+       
+        
+            
+        }
         }
         }
 
@@ -457,19 +485,18 @@ function toggleScreen() {
         for(e = 0; e < enemy.length; e += 1){
             if(enemy[e].x<player.x){
                 enemy[e].x +=enemy[e].xSpeed;
-            } else {
+            } else if (enemy[e].x>player.x) {
                 enemy[e].x -=enemy[e].xSpeed;
             }
             if(enemy[e].y<player.y){
                 enemy[e].y +=enemy[e].ySpeed;
-            } else {
+            } else if (enemy[e].y>player.y){
                 enemy[e].y -=enemy[e].ySpeed;
             }
+
         }
       };
 
-      
-      
       function drawBackground() {
         mapArray = [];
         var mapIndex = 0;
@@ -482,7 +509,7 @@ function toggleScreen() {
 
             if (tileType == 1) {
               mapArray.push(
-                new component(25, 25, "brown", tile_x, tile_y, "wall")
+                new component(25, 25, "black", tile_x, tile_y, "wall")
               );
             } else if (tileType == 2) {
               mapArray.push(
@@ -491,6 +518,10 @@ function toggleScreen() {
             } else if (tileType == 3) {
               mapArray.push(
                 new component(25, 25, "red", tile_x, tile_y, "lava")
+              );
+            } else if (tileType == 4) {
+              mapArray.push(
+                new component(25, 25, "brown", tile_x, tile_y, "bridge")
               );
             } else if (tileType == l) {
               mapArray.push(
@@ -510,23 +541,13 @@ function toggleScreen() {
       }
 
 
-      function sidePanel (){
-        Game.context.textAlign = "left";
-        enemyCounter.text = "Kills: " + kills;
-        passCounter.text = "Completions: " + passes;
-        enemyCounter.update();
-        passCounter.update();
-
-      }
-
-
 
 
 
 
       function reset(){
         scene = "survival";
-
+        hp = 3;
         deathTimer = 0; 
         player.x = 0;
         player.y = 465;
@@ -576,6 +597,13 @@ function toggleScreen() {
         for (e = 0; e < enemy.length; e++){
             enemy[e].update();
         }
+        spawnHarvest();
+        for (t = 0; t < trees.length; t++){
+            trees[t].update();
+        }
+        for (s = 0; s < stones.length; s++){
+            stones[s].update();
+        }
         player.update();
         fireBullets();
         updateBullets(bullets);
@@ -583,7 +611,6 @@ function toggleScreen() {
           bullets[i].update();
         }
         mapCollision(player);
-        sidePanel();
     }
 
 
@@ -636,9 +663,41 @@ function toggleScreen() {
         if(scene == "death"){
         death();
         }
+        if(hp<=0){
+          death();
+        }
         
-
+        updatePanel();
       }
+    
+    
+    
+    
+    
+    
+    function updatePanel(){
+        var hpdisplay = document.getElementById("hp");
+        hpdisplay.innerText = "HP: " + Math.ceil(hp);
+        var killsdisplay = document.getElementById("kills");
+        killsdisplay.innerText = "Kills: " + kills;
+        var hpdisplay = document.getElementById("stone");
+        hpdisplay.innerText = "Stone: " + stoneAmount;
+        var sidePanel = document.getElementById("side");
+        sidePanel.style.marginTop = (window.innerHeight-500)/2 + "px";
+        sidePanel.style.width = (window.innerWidth-1000)/2-10 + "px";
+    }
+
+
+
     </script>
+
+    <div id="side">
+    <p>Stats: </p>
+    <p id="hp"></p>
+    <p id="kills"></p>
+    <p id="stone"></p>
+    <p id="wood"></p>
+    </div>
+
   </body>
 </html>
