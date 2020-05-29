@@ -1,200 +1,131 @@
-body {
-    font-family: Helvetica;
-    text-align: center;
-      position: relative;
-      -webkit-animation-name: animatebottom;
-      -webkit-animation-duration: 1s;
-      animation-name: animatebottom;
-      animation-duration: 1s
-}
-      @-webkit-keyframes animatebottom {
-        from { bottom:-100px; opacity:0 } 
-        to { bottom:0px; opacity:1 }
-      }
-      
-      @keyframes animatebottom { 
-        from{ bottom:-100px; opacity:0 } 
-        to{ bottom:0; opacity:1 }
-      }
-  
-p {
-font-size: 40px;
+* {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-  .mission {
-    text-align: center;
-    margin: auto;
-  }
-  
-  h1 {
-    font-size: 80px;
-    }
+a {
+  color: black;
+  text-decoration: none;
+  width: 45%;
+  margin: 20px 0;
+  border-radius:25px;
 
-    h2 {
-      font-size: 80px;
-    }
-    h3 {
-      font-size: 40px;
-    }
-  
-  #topBtn {
-    border: none; 
-    outline: none; 
-    background-color: none; 
-    color: black; 
-    cursor: pointer; 
-    border-radius: 10px;
-    font-size: 18px; 
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 30px;
-  }
-  
-  #topBtn:hover {
-    background-color: red;
-    
-  }
-  
-  #navbar-outside {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #B5F2E7;
-  }
-  
-  .navbar-item {
-    float: left;
-    border-right:1px solid #bbb;
-    transition: width 2s, height 2s;
-  }
-  
-  .navbar-item a {
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
-  
-  form {
-    border:1px solid #ccc;
-    width: 500px;
-    display: inline-block
-  }
-  
-  input[type=text] {
-    width: 400px;
-    padding: 15px;
-    margin: 5px 0 22px 0;
-    display: inline-block;
-    border: none;
-    background: lightgray;
-  }
-  
-  input[type=text]:focus {
-    background-color: lightgray;
-    outline: none;
-  }
-  
-  hr {
-    border: 1px solid #f1f1f1;
-    margin-bottom: 25px;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    opacity: 0.9;
-  }
-  
-  button:hover {
-    opacity:1;
-  }
-  
-  .signupbtn {
-    float: left;
-    width: 200px;
-  }
-  
-  .container {
-    padding: 16px;
-  }
-  
-  .clearfix::after {
-    content: "";
-    clear: both;
-    display: table;
-  }
-  
-  .container {
-    background-color: white;
-  }
-  
-  #rect-animation {
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    position: sticky;
-    right: 0;
-    animation-name: animation;
-    animation-duration: 4s;
-    animation-iteration-count: infinite;
-    float: right;
-  }
-  
-  @keyframes animation {
-    0%   {background-color:red; right:0px; top:0px;}
-    25%  {background-color:yellow; right:20px; top:0px;}
-    50%  {background-color:blue; right:20px; top:20px;}
-    75%  {background-color:green; right:0px; top:20px;}
-    100% {background-color:red; right:0px; top:0px;}
-  }
-
-  
-.left {
-  text-align: left;
 }
 
-.right {
-  text-align: right;
+.header-background {
+  background-color: black;
 }
 
-.project {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: row;
-  /* flex-wrap: wrap; */
-  justify-content: space-between;
-  flex: 0 1 24%;
-  margin: 30px;
+.header {
+padding: 20px;
+color: green;
+font-family: 'Monaco', 'Menlo', 'Consolas';
+overflow: hidden;
+border-right: 1px solid white;
+animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
+letter-spacing: 2px;
+white-space: nowrap;
 }
 
-.project-image {
-  width: 300px;
-  vertical-align: middle;
-  border-radius: 10px 10px 0 0;
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
 }
 
-.project-text {
-  font-size: 30px;
-  text-align: left;
+@-webkit-keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
 }
 
-.project:hover {
-  background-color: rgb(240, 240, 240);
-  box-shadow: 0 16px 32px 0 rgba(0,0,0,0.2);
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: white; }
+}
+
+@-webkit-keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: white; }
 }
 
 .container {
-  background-color: transparent;
-  padding: 10px 70px;
+  margin: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.project {
+  border: 3px solid;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 1px 2px 8px #888888;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.project:hover {
+  box-shadow: 5px 10px 8px #888888;
+}
+
+.project-image {
+  height: 100px;
+  border-radius: 16px 0 16px 0;
+}
+
+h2 {
+  padding-left: 30px;
+}
+
+.top {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.bottom {
+  margin: 0 20px;
+}
+
+.languages {
+  color: #9d9c9c;
+}
+
+.profile-image {
+  width: 200px;
+  border-radius: 100px;
+  margin-right: 50px;
+}
+
+.intro {
+  padding: 50px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #cacaca;
+}
+
+h1, h2, p {
+  padding: 10px;
+}
+
+.outro {
+  background-color: #cacaca;
+}
+
+button {
+  background-color: white;
+  padding: 5px;
+  border-style: none;
+  border-radius: 20px;
+  margin: 10px;
+  box-shadow: 1px 2px 8px #888888;
+  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+button:hover{
+  background-color: black;
+  color: white;
+  box-shadow: 2px 4px 8px #888888;
 }
